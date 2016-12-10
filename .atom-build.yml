@@ -1,0 +1,1 @@
+cmd: browserify {PROJECT_PATH}/js/main.js > {PROJECT_PATH}/js/bundle.js && {PROJECT_PATH}/index.html
