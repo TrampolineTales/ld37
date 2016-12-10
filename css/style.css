@@ -1,5 +1,11 @@
-body {
+@font-face {
+  font-family: 'Hello';
+  src: url('../assets/Hello.ttf') format('truetype');
+}
+
+html {
   background-color: #E0D0C8;
+  overflow: hidden;
 }
 
 .panel {
@@ -7,9 +13,32 @@ body {
 }
 
 #evidence-panel {
-  bottom: 0px;
+  background-color: #422518;
+  right: 0px;
+  width: 400px;
+}
+
+#submit-section {
+
 }
 
 .evidence-tag {
+  color: #FFF;
+  height: 124px;
+}
 
+.case-num, .date, .type {
+  position: absolute;
+  font-family: 'Hello';
+  font-size: 48px;
+  z-index: 2;
+  left: 38px;
+}
+
+.date {
+  left: 198px;
+}
+
+.type {
+  font-size: 42px;
 }

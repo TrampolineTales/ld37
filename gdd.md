@@ -15,8 +15,14 @@
 * Evidence
   * Case #
   * Date
-  * Notes
+    * Format gets more confusing in later levels:
+      * 12/25/89
+      * Dec. '89
+      * December
+    * European detective swaps day/month early in career, makes note of this in Detective's Notes in casefile
+  * Type
+    * Sometimes vague, "Murder Weapon" instead of "Knife" and visa-versa
 * Casefile
   * Newspaper article(s)
   * Interview(s)
-  * Detective's Notes
+  * Detective's Note(s)
