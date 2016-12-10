@@ -1,3 +1,15 @@
 body {
-  background-color: #000;
+  background-color: #E0D0C8;
+}
+
+.panel {
+  position: absolute;
+}
+
+#evidence-panel {
+  bottom: 0px;
+}
+
+.evidence-tag {
+
 }
