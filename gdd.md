@@ -10,7 +10,6 @@
 * Evidence and requested evidence is pre-determined, not randomly generated
 * Evidence must often be cross-referenced with files under case # to find if they're the required evidence
 
-
 ### Data:
 * Evidence
   * Case #
@@ -26,3 +25,8 @@
   * Newspaper article(s)
   * Interview(s)
   * Detective's Note(s)
+
+### Vague requests/data:
+
+* Feb. 7th = "A week before Valentine's Day"
+* 32322 = "That case number with all the 2s and 3s"

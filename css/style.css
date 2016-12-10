@@ -3,26 +3,143 @@
   src: url('../assets/Hello.ttf') format('truetype');
 }
 
+@font-face {
+  font-family: 'Eighty-Four';
+  src: url('../assets/Eighty-Four.ttf') format('truetype');
+}
+
 html {
-  background-color: #E0D0C8;
+  background-color: #000;
   overflow: hidden;
+  cursor: default;
 }
 
 .panel {
   position: absolute;
 }
 
+#page-num {
+  font-size: 48px;
+  bottom: 0px;
+  left: 576px;
+  font-family: 'Eighty-Four';
+  color: #422518;
+}
+
+#arrow-left {
+  opacity: 0.65;
+  bottom: 2px;
+  right: 296px;
+}
+
+#arrow-right {
+  opacity: 0.65;
+  bottom: 2px;
+  right: 4px;
+}
+
+#arrow-left:hover, #arrow-right:hover {
+  opacity: 1;
+}
+
+#newspaper-icon {
+  opacity: 0.5;
+  margin: 6px;
+  border: solid green 4px;
+  border-radius: 6px;
+  min-width: 100px;
+  min-height: 100px;
+  float: right;
+}
+
+p, a, .casefile-text, .file-text, .topbar-text, .top-text {
+  text-decoration: none;
+  color: green;
+  font-family: monospace;
+  font-size: 20px;
+  padding-left: 6px;
+}
+
+.casefile-date {
+  float: right;
+  margin-right: 6px;
+}
+
+p {
+  padding: 6px 0px;
+  text-align: center;
+}
+
+.top-text {
+  color: #000;
+  font-family: monospace;
+  font-size: 20px;
+  padding-left: 6px;
+}
+
+.casefile-text {
+  padding-left: 10px;
+}
+
+.topbar-text, .text {
+  padding-right: 6px;
+  color: #000;
+  background-color: darkgreen;
+}
+
+.text {
+  line-height: 1.3;
+}
+
+.topbar-text:hover, .text:hover {
+  cursor: pointer;
+  color: #000;
+  background-color: lightgreen;
+}
+
+#casefile-panel {
+  border: solid #E0D0C8 8px;
+  border-radius: 5px;
+  left: 0px;
+  top: 0px;
+  width: 384px;
+  height: 284px;
+}
+
+.bar {
+  min-width: 374px;
+  color: #000;
+  background-color: green;
+  padding-left: 10px;
+}
+
+#casefile-topbar {
+  margin-bottom: 10px;
+}
+
+#casefile-bottombar {
+  margin-bottom: 0px;
+  position: absolute;
+  bottom: 0px;
+}
+
 #evidence-panel {
-  background-color: #422518;
+  background: #422518;
+  background: -webkit-linear-gradient(#422518, #A66829);
   right: 0px;
   width: 400px;
+  height: 600px;
 }
 
 #submit-section {
-
+  z-index: 3;
+  right: 0px;
+  top: 0px;
 }
 
 .evidence-tag {
+  cursor: pointer;
+  margin-top: 15px;
   color: #FFF;
   height: 124px;
 }
@@ -40,5 +157,5 @@ html {
 }
 
 .type {
-  font-size: 42px;
+  font-size: 30px;
 }
