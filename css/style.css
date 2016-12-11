@@ -43,21 +43,22 @@ html {
 }
 
 #newspaper-icon {
-  opacity: 0.5;
   margin: 6px;
-  border: solid green 4px;
+  border: dotted green 2px;
   border-radius: 6px;
   min-width: 100px;
   min-height: 100px;
   float: right;
 }
 
-p, a, .casefile-text, .file-text, .topbar-text, .top-text {
-  text-decoration: none;
+p, .casefile-text, .file-text, .topbar-text, .top-text {
   color: green;
   font-family: monospace;
-  font-size: 20px;
-  padding-left: 6px;
+  font-size: 18px;
+}
+
+a {
+  text-decoration: none;
 }
 
 .casefile-date {
@@ -70,6 +71,12 @@ p {
   text-align: center;
 }
 
+.newspaper {
+  margin: 2px;
+  border: 2px dotted green;
+  border-bottom: hidden;
+}
+
 .top-text {
   color: #000;
   font-family: monospace;
@@ -77,14 +84,23 @@ p {
   padding-left: 6px;
 }
 
-.casefile-text {
+.casefile-text, .file-text {
   padding-left: 10px;
 }
 
 .topbar-text, .text {
+  min-height: 24px;
   padding-right: 6px;
+  padding-left: 6px;
   color: #000;
-  background-color: darkgreen;
+  background-color: #004B00;
+}
+
+.topbar-text {
+  margin-left: 6px;
+  font-size: 20px;
+  position: absolute;
+  bottom: 0px;
 }
 
 .text {
@@ -108,18 +124,19 @@ p {
 
 .bar {
   min-width: 374px;
+  min-height: 24px;
   color: #000;
   background-color: green;
-  padding-left: 10px;
 }
 
 #casefile-topbar {
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 
 #casefile-bottombar {
   margin-bottom: 0px;
   position: absolute;
+  min-width: 384px;
   bottom: 0px;
 }
 
