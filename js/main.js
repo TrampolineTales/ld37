@@ -10,7 +10,7 @@ var currentLevel = 1;
 var animating = false;
 var tagAnimationNum = 1;
 var timer = 60;
-var strikes = 2; //0
+var strikes = 0;
 var $arrowLeft;
 var $arrowRight;
 
@@ -22,8 +22,10 @@ function displayCover(message) {
   $('<div>').attr('id', 'cover').html(message + '<br><br>').appendTo($('body'));
   var intervalID = setInterval(function() {
     if (parseFloat($('#cover').css('opacity')) < 1) {
+      animating = true;
       $('#cover').css('opacity', parseFloat($('#cover').css('opacity')) + 0.01);
     } else {
+      animating = false;
       if (message == 'GAME OVER') {
         $('<span>').attr('class', 'cover-button').html('Try again?').click(function() {
           $('#cover').remove();
@@ -52,6 +54,10 @@ function displayOfficerMessage(message) {
       $officerMessage.text($officerMessage.text() + arr[$officerMessage.text().length]);
     } else {
       switch (message) {
+        case 'You\'re taking too long, mac! I\'m outta here!':
+          $($('.strike')[2 - strikes]).html('[X]');
+          strikes++
+        break;
         case 'That\'s not right...':
           $($('.strike')[2 - strikes]).html('[X]');
           strikes++
@@ -93,6 +99,7 @@ function submitTag() {
       clearInterval(intervalID);
       if (submittedTagIDs[submittedTagIDs.length - 1] == LevelsJSON[currentLevel - 1].neededTags[submittedTagIDs.length - 1]) {
         displayOfficerMessage('That\'s the one! Thanks mac!');
+        timer = 60;
       } else if (strikes < 2) {
         displayOfficerMessage('That\'s not right...');
         remainingTags.push(submittedTagIDs.splice(submittedTagIDs.length - 1, 1)[0]);
@@ -168,11 +175,25 @@ function addTag(id) {
     }.bind({$div: $evidenceTags[$evidenceTags.length - 1]}));
 }
 
+function decreaseTimer() {
+  if (timer == 0) {
+    displayOfficerMessage('You\'re taking too long, mac! I\'m outta here!');
+  } else {
+    timer--;
+    if (timer > 9) {
+      $('#timer').html(':' + timer);
+    } else {
+      $('#timer').html(':0' + timer);
+    }
+  }
+}
+
 function addTagsByPage(initLevel) {
   $evidenceTags.map((el)=> el.remove());
   $evidenceTags = [];
 
   if (initLevel) {
+    setInterval(decreaseTimer, 1000);
     currentPage = 1;
     var tags = LevelsJSON[currentLevel - 1].evidenceTags;
     remainingTags = LevelsJSON[currentLevel - 1].evidenceTags;
