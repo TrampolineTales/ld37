@@ -22,7 +22,7 @@ html {
   font-size: 48px;
   bottom: 0px;
   left: 576px;
-  font-family: 'Eighty-Four';
+  font-family: Arial;
   color: #422518;
 }
 
@@ -40,6 +40,7 @@ html {
 
 #arrow-left:hover, #arrow-right:hover {
   opacity: 1;
+  cursor: pointer;
 }
 
 #newspaper-icon {
@@ -64,6 +65,26 @@ a {
 .casefile-date {
   float: right;
   margin-right: 6px;
+}
+
+#cover {
+  opacity: 0;
+  position: absolute;
+  z-index: 4;
+  color: #FFF;
+  text-align: center;
+  font-size: 72px;
+  font-family: 'Eighty-Four';
+  background-color: #000;
+  min-width: 800px;
+  min-height: 600px;
+}
+
+#strikes {
+  color: #000;
+  left: 268px;
+  top: 246px;
+  position: absolute;
 }
 
 p {
@@ -107,6 +128,20 @@ p {
   line-height: 1.3;
 }
 
+.cover-button {
+  opacity: 0.65;
+  margin-top: 100px;
+  border: solid #FFF 2px;
+  background-color: #FFF;
+  color: #000;
+  border-radius: 5px;
+}
+
+.cover-button:hover {
+  opacity: 1;
+  cursor: pointer;
+}
+
 .topbar-text:hover, .text:hover {
   cursor: pointer;
   color: #000;
@@ -130,7 +165,7 @@ p {
 }
 
 #casefile-topbar {
-  margin-bottom: 6px;
+  margin-bottom: 3px;
 }
 
 #casefile-bottombar {
@@ -148,10 +183,21 @@ p {
   height: 600px;
 }
 
-#submit-section {
-  z-index: 3;
-  right: 0px;
-  top: 0px;
+#officer-panel {
+  width: 400px;
+  height: 300px;
+  left: 0px;
+  bottom: 0px;
+}
+
+.officer-message {
+  position: absolute;
+  bottom: 0px;
+  font-size: 34px;
+  background-color: #FFF;
+  font-family: 'Eighty-Four';
+  color: #000;
+  border-radius: 2px;
 }
 
 .evidence-tag {
@@ -162,17 +208,20 @@ p {
 }
 
 .case-num, .date, .type {
-  position: absolute;
+  position: relative;
   font-family: 'Hello';
   font-size: 48px;
   z-index: 2;
   left: 38px;
+  top: -120px;
 }
 
 .date {
   left: 198px;
+  top: -176px;
 }
 
 .type {
   font-size: 30px;
+  top: -166px;
 }

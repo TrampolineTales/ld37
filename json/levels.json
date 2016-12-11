@@ -1,7 +1,8 @@
 [
   {
-    "evidenceTags": [0, 1],
+    "evidenceTags": [0, 1, 2, 3, 4],
     "neededTags": [0],
+    "messages": ["Hey mac, lemme get the evidence from Case #21."],
     "caseFiles": [0]
   }
 ]
