@@ -1,6 +1,7 @@
 [
   {
-    "evidenceTags": [0, 1, 2, 3, 4],
+    "levelMessage": "Welcome to The Evidence Room! Due to budget cuts at the precinct, all the evidence has to be stored in one room. It's up to YOU to make sure the evidence gets to the right police officers, even when they don't know exactly which piece of evidence they need...",
+    "evidenceTags": [0, 1],
     "neededTags": [0],
     "messages": ["Hey mac, lemme get the evidence from Case #21."],
     "caseFiles": [0]

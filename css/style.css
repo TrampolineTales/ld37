@@ -202,6 +202,8 @@ p {
 }
 
 .officer-message {
+  padding-left: 6px;
+  padding-right: 6px;
   position: absolute;
   bottom: 0px;
   font-size: 34px;

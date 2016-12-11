@@ -8,79 +8,152 @@ var remainingTags = [];
 var submittedTagIDs = [];
 var currentPage = 1;
 var currentLevel = 1;
-var animating = false;
+var animating = true;
 var tagAnimationNum = 1;
 var timer = 60;
 var strikes = 0;
+var gameStarted = false;
 var $arrowLeft;
 var $arrowRight;
+var timerID;
 
 function addClickableText(text, func, className) {
   return $('<div>').html('<span class="' + className +'">' + text + '</span>').click(func);
 }
 
 function displayCover(message) {
-  $('<div>').attr('id', 'cover').html(message + '<br><br>').appendTo($('body'));
+  $('<div>').attr('id', 'cover').html('<br>' + message + '<br><br>').appendTo($('body'));
   var intervalID = setInterval(function() {
-    if (parseFloat($('#cover').css('opacity')) < 1) {
+    if ((parseFloat($('#cover').css('opacity')) < 1) && (gameStarted)) {
       animating = true;
       $('#cover').css('opacity', parseFloat($('#cover').css('opacity')) + 0.01);
     } else {
-      animating = false;
-      if (message == 'GAME OVER') {
-        $('<span>').attr('class', 'cover-button').html('Try again?').click(function() {
+      switch (message) {
+        case 'YOU WIN!':
+        $('<div>').html('Score: ' + submittedTagIDs.length + ' out of ' + LevelsJSON[currentLevel - 1].neededTags.length).appendTo($('#cover'));
+          $('<span>').attr('class', 'cover-button').html('Play again?').click(function() {
+            strikes = 0;
+            timer = 60;
+            $('#timer').html(':60');
+            clearInterval(timerID);
+            $('#cover').remove();
+            addTagsByPage(true);
+            $('.strike').html('[ ]');
+            displayOfficerMessage();
+            timerID = setInterval(decreaseTimer, 1000);
+          }).appendTo($('#cover'));
+        break;
+        case 'GAME OVER':
+        $('<div>').html('Score: ' + submittedTagIDs.length + ' out of ' + LevelsJSON[currentLevel - 1].neededTags.length).appendTo($('#cover'));
+          $('<span>').attr('class', 'cover-button').html('Try again?').click(function() {
+            strikes = 0;
+            timer = 60;
+            $('#timer').html(':60');
+            clearInterval(timerID);
+            $('#cover').remove();
+            addTagsByPage(true);
+            $('.strike').html('[ ]');
+            displayOfficerMessage();
+          }).appendTo($('#cover'));
+        break;
+      case 'The Evidence Room':
+      $('#cover').css('opacity', 1);
+      $('<span>').attr('class', 'cover-button').html('Play').click(function() {
+        $('#cover').remove();
+        displayCover(LevelsJSON[0].levelMessage);
+      }).appendTo($('#cover'));
+      break;
+      case LevelsJSON[0].levelMessage:
+        $('#cover').css('font-size', '52px');
+        $('#cover').css('opacity', 1);
+        if (!gameStarted) {
+          var $body = $('body');
+          $('<div>').attr('id', 'casefile-panel').attr('class', 'panel').html('<div id="casefile-monitor">').appendTo($body);
+          $('<div>').attr('id', 'officer-panel').attr('class', 'panel').appendTo($body);
+          $('<div>').attr('id', 'evidence-panel').attr('class', 'panel').appendTo($body);
+          $('<div>').attr('id', 'page-num').attr('class', 'panel').appendTo($body);
+          $('<div>').attr('id', 'timer').html(':60').appendTo($body);
+          $('<p>').attr('id', 'strikes').html('<span class="strike">[ ]</span> <span class="strike">[ ]</span> <span class="strike">[ ]</span>').appendTo($body);
+          gameStarted = true;
+        }
+        $('<span>').attr('class', 'cover-button').html('Let\'s get started!').click(function() {
+          $('#cover').css('font-size', '72px');
           $('#cover').remove();
-          addTagsByPage(undefined, undefined, true);
-          $('.strike').html('[ ]');
+
+          var $pageNum = $('#page-num');
+          $arrowLeft = $('<img>').attr('class', 'panel').attr('id', 'arrow-left').attr('src', 'assets/arrow-left.png').click(function() {
+            currentPage--;
+            addTagsByPage(false);
+              $pageNum.html(currentPage + '/' + Math.ceil(remainingTags.length / 4));
+          });
+          $arrowRight = $('<img>').attr('class', 'panel').attr('id', 'arrow-right').attr('src', 'assets/arrow-right.png').click(function() {
+            currentPage++;
+            addTagsByPage(false);
+            $pageNum.html(currentPage + '/' + Math.ceil(remainingTags.length / 4));
+          });
+
+          addCasefiles(true);
+          addTagsByPage(true);
+          $pageNum.html(currentPage + '/' + Math.ceil(remainingTags.length / 4));
+          setTimeout(function() {
           displayOfficerMessage();
+          timerID = setInterval(decreaseTimer, 1000);
+          }, 1250);
         }).appendTo($('#cover'));
-      }
-      clearInterval(intervalID);
+      break;
     }
+    clearInterval(intervalID);
+  }
   }, 1000 / 60);
 }
 
 function displayOfficerMessage(message) {
-  animating = true;
-  $('#officer-panel').html('');
-  $('<div>').attr('class', 'officer-message').appendTo($('#officer-panel'));
-  var intervalID = setInterval(function() {
-    var $officerMessage = $('.officer-message');
-    if (message == undefined) {
-      var arr = LevelsJSON[currentLevel - 1].messages[submittedTagIDs.length].split('');
-    } else {
-      var arr = message.split('');
-    }
-    if ($officerMessage.text().length < arr.length) {
-      $officerMessage.text($officerMessage.text() + arr[$officerMessage.text().length]);
-    } else {
-      switch (message) {
-        case 'You\'re taking too long, mac! I\'m outta here!':
-          $($('.strike')[2 - strikes]).html('[X]');
-          strikes++
-        break;
-        case 'That\'s not right...':
-          $($('.strike')[2 - strikes]).html('[X]');
-          strikes++
-        break;
-        case 'That\'s not right! You\'ve made too many mistakes, cementhead! You\'re fired!':
-          $($('.strike')[2 - strikes]).html('[X]');
-          strikes++;
-          displayCover('GAME OVER');
-        break;
+  if ((submittedTagIDs.length == LevelsJSON[currentLevel - 1].neededTags.length) && (message == undefined)) {
+    displayCover('YOU WIN!');
+  } else {
+    animating = true;
+    $('#officer-panel').html('');
+    $('<div>').attr('class', 'officer-message').appendTo($('#officer-panel'));
+    var intervalID = setInterval(function() {
+      $('#talking')[0].play();
+      var $officerMessage = $('.officer-message');
+      if (message == undefined) {
+        var arr = LevelsJSON[currentLevel - 1].messages[submittedTagIDs.length].split('');
+      } else {
+        var arr = message.split('');
       }
-      animating = false;
-      clearInterval(intervalID);
-    }
-  }, 35);
+      if ($officerMessage.text().length < arr.length) {
+        $officerMessage.text($officerMessage.text() + arr[$officerMessage.text().length]);
+      } else {
+        switch (message) {
+          case 'You\'re taking too long, mac! I\'m outta here!':
+            $($('.strike')[2 - strikes]).html('[X]');
+            strikes++;
+            $('#strikesound')[0].play();
+          break;
+          case 'That\'s not right...':
+            $($('.strike')[2 - strikes]).html('[X]');
+            strikes++;
+            $('#strikesound')[0].play();
+          break;
+          case 'That\'s not right! You\'ve made too many mistakes, cementhead! You\'re fired!':
+            $($('.strike')[2 - strikes]).html('[X]');
+            strikes++;
+            $('#strikesound')[0].play();
+            displayCover('GAME OVER');
+          break;
+        }
+        $('#talking')[0].pause();
+        animating = false;
+        clearInterval(intervalID);
+      }
+    }, 35);
+  }
 }
-
-// MAKE TUTORIAL LEVEL
-// MAKE TITLE SCREEN
-// ADD SOUND EFFECTS
 
 function submitTag() {
   animating = true;
+  $('#submit')[0].play();
 
   for (var i = 0; i < remainingTags.length; i++) {
     if (remainingTags[i] == this.$div.data('id')) {
@@ -100,7 +173,12 @@ function submitTag() {
       clearInterval(intervalID);
       if (submittedTagIDs[submittedTagIDs.length - 1] == LevelsJSON[currentLevel - 1].neededTags[submittedTagIDs.length - 1]) {
         displayOfficerMessage('That\'s the one! Thanks mac!');
-        timer = 60;
+        clearInterval(timerID);
+        setTimeout(function() {
+          displayOfficerMessage();
+          timerID = setInterval(decreaseTimer, 1000);
+          timer = 60;
+        }, 3000);
       } else if (strikes < 2) {
         displayOfficerMessage('That\'s not right...');
         remainingTags.push(submittedTagIDs.splice(submittedTagIDs.length - 1, 1)[0]);
@@ -110,7 +188,7 @@ function submitTag() {
       }
       addTagsByPage(false);
       if (remainingTags.length > 0) {
-        $('#page-num').html(currentPage + '/' + Math.ceil(LevelsJSON[currentLevel - 1].evidenceTags.length / 4));
+        $('#page-num').html(currentPage + '/' + Math.ceil(remainingTags.length / 4));
       }
     } else {
       this.$div.css('left', parseInt(this.$div.css('left')) + tagAnimationNum);
@@ -128,7 +206,8 @@ function addCasefiles(animate) {
     for (var i = 0; i < LevelsJSON[currentLevel - 1].caseFiles.length; i++) {
       setTimeout(function() {
         $('<div>').attr('class', 'casefile-text').html(addClickableText(CaseFilesJSON[[LevelsJSON[currentLevel - 1].caseFiles[this.num]]].title, displayCasefileData, 'text').data('id', LevelsJSON[currentLevel - 1].caseFiles[this.num])).appendTo($caseFileMonitor)
-      }.bind({num: i}), (i + 1) * 100);
+        $('#blip' + (Math.floor(Math.random() * 3) + 1))[0].play();
+      }.bind({num: i}), (i + 1) * 250);
     }
   } else {
     for (var i = 0; i < LevelsJSON[currentLevel - 1].caseFiles.length; i++) {
@@ -169,7 +248,7 @@ function addTag(id) {
     '<div class="type">' + EvidenceTagsJSON[id].type + '</div>').data('id', EvidenceTagsJSON[id].id).appendTo($('#evidence-panel')));
   $evidenceTags[$evidenceTags.length - 1].click(
     function() {
-      if (!animating) {
+      if ((!animating) && (submittedTagIDs.length != LevelsJSON[currentLevel - 1].neededTags.length)) {
         this.$div.css('position', 'relative');
         submitTag.bind({$div: this.$div})()
       }
@@ -179,9 +258,15 @@ function addTag(id) {
 function decreaseTimer() {
   if (timer == 0) {
     displayOfficerMessage('You\'re taking too long, mac! I\'m outta here!');
+    timer = 60;
+    setTimeout(displayOfficerMessage, 2500);
   } else {
     timer--;
-    $('#timer').html(':' + timer);
+    if (timer > 9) {
+      $('#timer').html(':' + timer);
+    } else {
+      $('#timer').html(':0' + timer);
+    }
   }
 }
 
@@ -190,10 +275,9 @@ function addTagsByPage(initLevel) {
   $evidenceTags = [];
 
   if (initLevel) {
-    setInterval(decreaseTimer, 1000);
     currentPage = 1;
     var tags = LevelsJSON[currentLevel - 1].evidenceTags;
-    remainingTags = LevelsJSON[currentLevel - 1].evidenceTags;
+    remainingTags = LevelsJSON[currentLevel - 1].evidenceTags.map((el)=>el);
     submittedTagIDs = [];
   } else {
     $arrowLeft.detach();
@@ -217,22 +301,7 @@ function addTagsByPage(initLevel) {
 }
 
 $(document).ready(function() {
-  var $pageNum = $('#page-num');
-  $arrowLeft = $('<img>').attr('class', 'panel').attr('id', 'arrow-left').attr('src', 'assets/arrow-left.png').click(function() {
-    currentPage--;
-    addTagsByPage(false);
-      $pageNum.html(currentPage + '/' + Math.ceil(LevelsJSON[currentLevel - 1].evidenceTags.length / 4));
-  });
-  $arrowRight = $('<img>').attr('class', 'panel').attr('id', 'arrow-right').attr('src', 'assets/arrow-right.png').click(function() {
-    currentPage++;
-    addTagsByPage(false);
-    $pageNum.html(currentPage + '/' + Math.ceil(LevelsJSON[currentLevel - 1].evidenceTags.length / 4));
-  });
-
-  addCasefiles(true);
-  addTagsByPage(true);
-  $pageNum.html(currentPage + '/' + Math.ceil(LevelsJSON[currentLevel - 1].evidenceTags.length / 4));
-  displayOfficerMessage();
+  displayCover('The Evidence Room');
 });
 
 },{"../json/casefiles.json":2,"../json/evidencetags.json":3,"../json/levels.json":4}],2:[function(require,module,exports){
@@ -259,31 +328,14 @@ module.exports=[
     "caseNum": "23535",
     "date": "January",
     "type": "Portsman's Cufflink"
-  },
-  {
-    "id": 2,
-    "caseNum": "69696",
-    "date": "Test",
-    "type": "Test1"
-  },
-  {
-    "id": 3,
-    "caseNum": "23535",
-    "date": "Test",
-    "type": "Test2"
-  },
-  {
-    "id": 4,
-    "caseNum": "23535",
-    "date": "Test",
-    "type": "Test3"
   }
 ]
 
 },{}],4:[function(require,module,exports){
 module.exports=[
   {
-    "evidenceTags": [0, 1, 2, 3, 4],
+    "levelMessage": "Welcome to The Evidence Room! Due to budget cuts at the precinct, all the evidence has to be stored in one room. It's up to YOU to make sure the evidence gets to the right police officers, even when they don't know exactly which piece of evidence they need...",
+    "evidenceTags": [0, 1],
     "neededTags": [0],
     "messages": ["Hey mac, lemme get the evidence from Case #21."],
     "caseFiles": [0]
