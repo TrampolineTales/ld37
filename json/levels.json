@@ -1,9 +1,17 @@
 [
   {
     "levelMessage": "Welcome to The Evidence Room! Due to budget cuts at the precinct, all the evidence has to be stored in one room. It's up to YOU to make sure the evidence gets to the right police officers, even when they don't know exactly which piece of evidence they need...",
-    "evidenceTags": [0, 1],
-    "neededTags": [0],
-    "messages": ["Hey mac, lemme get the evidence from Case #21."],
-    "caseFiles": [0]
+    "evidenceTags": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    "neededTags": [0, 8, 1, 7, 3, 5, 11],
+    "messages": [
+      "Hey mac, lemme get the evidence from Case #21.",
+      "Hey mac, can you get me the evidence from the Milennium Christmas Killer? The Casefile Computer might help you out.",
+      "Hey mac, remember that piece of the victim's suit that fell off during that one opera murder? Find it for me, would ya?",
+      "Hey mac, would you mind getting the chatlogs that we printed out from the '93 stalker case?",
+      "Sorry to bother you again, mac. Can I get the other evidence we have from the opera murder?",
+      "Hey mac, lemme get the evidence from the week before Valentine's Day.",
+      "Hey mac, can you get me the evidence from June 5th? I think one of our British interns filled out the evidence tag.",
+    ],
+    "caseFiles": [0, 1, 2, 3, 4]
   }
 ]

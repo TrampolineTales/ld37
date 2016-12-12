@@ -8,7 +8,67 @@
   {
     "id": 1,
     "caseNum": "23535",
-    "date": "January",
+    "date": "1/10/85",
     "type": "Portsman's Cufflink"
+  },
+  {
+    "id": 2,
+    "caseNum": "99937",
+    "date": "Dec. '16",
+    "type": "Switchblade Knife"
+  },
+  {
+    "id": 3,
+    "caseNum": "23535",
+    "date": "1/11/85",
+    "type": "Interview Tape"
+  },
+  {
+    "id": 4,
+    "caseNum": "10505",
+    "date": "4/17/95",
+    "type": "Blood Sample"
+  },
+  {
+    "id": 5,
+    "caseNum": "89070",
+    "date": "2/7/08",
+    "type": "Artist's Sketch"
+  },
+  {
+    "id": 6,
+    "caseNum": "45062",
+    "date": "5/18 '65",
+    "type": "Fire Extinguisher"
+  },
+  {
+    "id": 7,
+    "caseNum": "80876",
+    "date": "Jan. '93",
+    "type": "IRC Chatlogs"
+  },
+  {
+    "id": 8,
+    "caseNum": "70560",
+    "date": "12/25/00",
+    "type": "Fireplace Poker"
+  },
+  {
+    "id": 9,
+    "caseNum": "72963",
+    "date": "2/1/15",
+    "type": "Blood Sample"
+  },
+  {
+    "id": 10,
+    "caseNum": "52100",
+    "date": "8/22/73",
+    "type": "Shoelace"
+  },
+  {
+    "id": 11,
+    "caseNum": "45062",
+    "date": "5/6/13",
+    "type": "Stuffed Animal"
   }
 ]

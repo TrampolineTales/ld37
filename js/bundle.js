@@ -16,6 +16,7 @@ var gameStarted = false;
 var $arrowLeft;
 var $arrowRight;
 var timerID;
+var officerIntervalID;
 
 function addClickableText(text, func, className) {
   return $('<div>').html('<span class="' + className +'">' + text + '</span>').click(func);
@@ -92,7 +93,7 @@ function displayCover(message) {
             $pageNum.html(currentPage + '/' + Math.ceil(remainingTags.length / 4));
           });
 
-          addCasefiles(true);
+          addCasefiles(false);
           addTagsByPage(true);
           $pageNum.html(currentPage + '/' + Math.ceil(remainingTags.length / 4));
           setTimeout(function() {
@@ -108,13 +109,15 @@ function displayCover(message) {
 }
 
 function displayOfficerMessage(message) {
+  clearInterval(officerIntervalID);
   if ((submittedTagIDs.length == LevelsJSON[currentLevel - 1].neededTags.length) && (message == undefined)) {
     displayCover('YOU WIN!');
   } else {
     animating = true;
     $('#officer-panel').html('');
     $('<div>').attr('class', 'officer-message').appendTo($('#officer-panel'));
-    var intervalID = setInterval(function() {
+
+    officerIntervalID = setInterval(function() {
       $('#talking')[0].play();
       var $officerMessage = $('.officer-message');
       if (message == undefined) {
@@ -130,22 +133,35 @@ function displayOfficerMessage(message) {
             $($('.strike')[2 - strikes]).html('[X]');
             strikes++;
             $('#strikesound')[0].play();
+
+            clearInterval(officerIntervalID);
+            if (strikes > 2) {
+              displayCover('GAME OVER');
+            } else {
+              setTimeout(displayOfficerMessage, 2000);
+            }
           break;
           case 'That\'s not right...':
             $($('.strike')[2 - strikes]).html('[X]');
             strikes++;
             $('#strikesound')[0].play();
+
+            clearInterval(officerIntervalID);
+            setTimeout(displayOfficerMessage, 2000);
           break;
           case 'That\'s not right! You\'ve made too many mistakes, cementhead! You\'re fired!':
             $($('.strike')[2 - strikes]).html('[X]');
             strikes++;
             $('#strikesound')[0].play();
+
+            clearInterval(officerIntervalID);
             displayCover('GAME OVER');
           break;
+          default:
+            clearInterval(officerIntervalID);
         }
         $('#talking')[0].pause();
         animating = false;
-        clearInterval(intervalID);
       }
     }, 35);
   }
@@ -155,19 +171,20 @@ function submitTag() {
   animating = true;
   $('#submit')[0].play();
 
-  for (var i = 0; i < remainingTags.length; i++) {
-    if (remainingTags[i] == this.$div.data('id')) {
-      submittedTagIDs.push($evidenceTags[i % 4].data('id'));
-      remainingTags.splice(i, 1);
-      if ((remainingTags.length % 4 == 0) && (remainingTags.length > 0) && (currentPage - 1 == Math.ceil(remainingTags.length / 4)) && (submittedTagIDs[submittedTagIDs.length - 1] == LevelsJSON[currentLevel - 1].neededTags[submittedTagIDs.length - 1])) {
-        currentPage--;
-      }
-      break;
-    }
-  }
-
   var intervalID = setInterval(function() {
     if (parseInt(this.$div.css('left')) >= 400) {
+
+      for (var i = 0; i < remainingTags.length; i++) {
+        if (remainingTags[i] == this.$div.data('id')) {
+          submittedTagIDs.push($evidenceTags[i % 4].data('id'));
+          remainingTags.splice(i, 1);
+          if ((remainingTags.length % 4 == 0) && (remainingTags.length > 0) && (currentPage - 1 == Math.ceil(remainingTags.length / 4)) && (submittedTagIDs[submittedTagIDs.length - 1] == LevelsJSON[currentLevel - 1].neededTags[submittedTagIDs.length - 1])) {
+            currentPage--;
+          }
+          break;
+        }
+      }
+
       tagAnimationNum = 1;
       animating = false;
       clearInterval(intervalID);
@@ -200,20 +217,22 @@ function submitTag() {
 function addCasefiles(animate) {
   var $caseFileMonitor = $('#casefile-monitor');
   $caseFileMonitor.html('');
-  $('<div>').attr('id', 'casefile-topbar').html($('<div>').attr('class', 'bar').html(addClickableText('Casefiles', undefined, 'top-text'))).appendTo($caseFileMonitor);
+  $('<div>').attr('id', 'casefile-topbar').html($('<div>').attr('class', 'bar').html(addClickableText('Casefile Computer', undefined, 'top-text'))).appendTo($caseFileMonitor);
 
-  if (true) { //change to animate != undefined if deemed annoying
-    for (var i = 0; i < LevelsJSON[currentLevel - 1].caseFiles.length; i++) {
-      setTimeout(function() {
-        $('<div>').attr('class', 'casefile-text').html(addClickableText(CaseFilesJSON[[LevelsJSON[currentLevel - 1].caseFiles[this.num]]].title, displayCasefileData, 'text').data('id', LevelsJSON[currentLevel - 1].caseFiles[this.num])).appendTo($caseFileMonitor)
-        $('#blip' + (Math.floor(Math.random() * 3) + 1))[0].play();
-      }.bind({num: i}), (i + 1) * 250);
-    }
-  } else {
+  // if ((animate != undefined) && (animate)) {
+  //   for (var i = 0; i < LevelsJSON[currentLevel - 1].caseFiles.length; i++) {
+  //     setTimeout(function() {
+  //       if (!animating) {
+  //         $('<div>').attr('class', 'casefile-text').html(addClickableText(CaseFilesJSON[[LevelsJSON[currentLevel - 1].caseFiles[this.num]]].title, displayCasefileData, 'text').data('id', LevelsJSON[currentLevel - 1].caseFiles[this.num])).appendTo($caseFileMonitor)
+  //         $('#blip' + (Math.floor(Math.random() * 3) + 1))[0].play();
+  //       }
+  //     }.bind({num: i}), (i + 1) * 250);
+  //   }
+  // } else {
     for (var i = 0; i < LevelsJSON[currentLevel - 1].caseFiles.length; i++) {
       $('<div>').attr('class', 'casefile-text').html(addClickableText(CaseFilesJSON[[LevelsJSON[currentLevel - 1].caseFiles[i]]].title, displayCasefileData, 'text').data('id', LevelsJSON[currentLevel - 1].caseFiles[i])).appendTo($caseFileMonitor);
     }
-  }
+  // }
 
   $('<div>').attr('id', 'casefile-bottombar').html($('<div>').attr('class', 'bar').html(addClickableText('CasefileOS-v0.37', function() {
     $caseFileMonitor.html('');
@@ -230,11 +249,16 @@ function displayCasefileData() {
 
   switch (casefile.type) {
     case 'newspaper':
-      $('<div>').attr('id', 'casefile-topbar').html($('<div>').attr('class', 'bar').html('<span class="top-text">' + casefile.title + '</span>' + '<span class="top-text casefile-date">' + casefile.date + '</span>')).appendTo($caseFileMonitor);
+      $('<div>').attr('id', 'casefile-topbar').html($('<div>').attr('class', 'bar').html('<span class="top-text">' + casefile.title + '</span>' + '<span class="top-text casefile-date">' + casefile.data + '</span>')).appendTo($caseFileMonitor);
       $('<div>').attr('class', 'newspaper').html('<div id="newspaper-icon"></div>' + '<div class="file-text">' + casefile.text + '</div>').appendTo($caseFileMonitor);
     break;
+    case 'notes':
+    $('<div>').attr('id', 'casefile-topbar').html($('<div>').attr('class', 'bar').html('<span class="top-text">' + casefile.title + '</span>' + '<span class="top-text casefile-date">' + casefile.data + '</span>')).appendTo($caseFileMonitor);
+      $('<div>').attr('class', 'file-text').html(casefile.text).appendTo($caseFileMonitor);
+    break;
     default:
-      $caseFileMonitor.html($('<div>').attr('class', 'file-text').html(casefile.text));
+      $('<div>').attr('id', 'casefile-topbar').html($('<div>').attr('class', 'bar').html('<span class="top-text">' + casefile.title + '</span>')).appendTo($caseFileMonitor);
+      $('<div>').attr('class', 'file-text').html(casefile.text).appendTo($caseFileMonitor);
   }
 
   $('<div>').attr('id', 'casefile-bottombar').html($('<div>').attr('class', 'bar').html(addClickableText('Back', addCasefiles, 'topbar-text'))).appendTo($caseFileMonitor);
@@ -259,7 +283,6 @@ function decreaseTimer() {
   if (timer == 0) {
     displayOfficerMessage('You\'re taking too long, mac! I\'m outta here!');
     timer = 60;
-    setTimeout(displayOfficerMessage, 2500);
   } else {
     timer--;
     if (timer > 9) {
@@ -287,7 +310,7 @@ function addTagsByPage(initLevel) {
 
   for (var i = (currentPage - 1) * 4; i < tags.length; i++) {
     addTag(tags[i]);
-    if (i == 3) {
+    if (i == 3 + (currentPage - 1) * 4) {
       if (tags[4] != undefined) {
         $arrowRight.appendTo($('body'));
       }
@@ -307,11 +330,34 @@ $(document).ready(function() {
 },{"../json/casefiles.json":2,"../json/evidencetags.json":3,"../json/levels.json":4}],2:[function(require,module,exports){
 module.exports=[
   {
-    "caseNum": 23535,
     "type": "newspaper",
-    "date": "1/10/85",
+    "data": "1/10/85",
     "title": "\"Tragedy at the Opera!\"",
     "text": "Tragedy struck yesterday at the Sunday showing at the Gregory Opera Theatre. During the pivotal scene, Frank Portsman (48) was pushed from the balcony! Police are still questioning those who were in the same wing as Portsman."
+  },
+  {
+    "type": "notes",
+    "data": "#70560",
+    "title": "Milennium Christmas Killer",
+    "text": "Name: Gregory Bales<br>Age: Deceased<br>Occupation: Unknown<br>Aliases: Greg, Christmas Killer, Milennium Christmas Killer"
+  },
+  {
+    "type": "notes",
+    "data": "#07510",
+    "title": "Seven Sins Killer",
+    "text": "Name: Vincent Woodman<br>Age: Deceased<br>Occupation: Unknown<br>Aliases: Vince, Woody, Seven Sins Killer"
+  },
+  {
+    "type": "newspaper",
+    "data": "8/22/73",
+    "title": "\"Piano Teacher Kills 12\"",
+    "text": "Police officers say there's a killer on the lose who is targeting those who have taken piano lessons. The latest victim is Jimmy Green (14)."
+  },
+  {
+    "type": "notes",
+    "data": "#01925",
+    "title": "\"Farmer Bob\"",
+    "text": "Name: Robert Pitch<br>Age: 87<br>Occupation: Farmer<br>Aliases: Bob, Farmer Bob, Pitchfork Killer"
   }
 ]
 
@@ -326,8 +372,68 @@ module.exports=[
   {
     "id": 1,
     "caseNum": "23535",
-    "date": "January",
+    "date": "1/10/85",
     "type": "Portsman's Cufflink"
+  },
+  {
+    "id": 2,
+    "caseNum": "99937",
+    "date": "Dec. '16",
+    "type": "Switchblade Knife"
+  },
+  {
+    "id": 3,
+    "caseNum": "23535",
+    "date": "1/11/85",
+    "type": "Interview Tape"
+  },
+  {
+    "id": 4,
+    "caseNum": "10505",
+    "date": "4/17/95",
+    "type": "Blood Sample"
+  },
+  {
+    "id": 5,
+    "caseNum": "89070",
+    "date": "2/7/08",
+    "type": "Artist's Sketch"
+  },
+  {
+    "id": 6,
+    "caseNum": "45062",
+    "date": "5/18 '65",
+    "type": "Fire Extinguisher"
+  },
+  {
+    "id": 7,
+    "caseNum": "80876",
+    "date": "Jan. '93",
+    "type": "IRC Chatlogs"
+  },
+  {
+    "id": 8,
+    "caseNum": "70560",
+    "date": "12/25/00",
+    "type": "Fireplace Poker"
+  },
+  {
+    "id": 9,
+    "caseNum": "72963",
+    "date": "2/1/15",
+    "type": "Blood Sample"
+  },
+  {
+    "id": 10,
+    "caseNum": "52100",
+    "date": "8/22/73",
+    "type": "Shoelace"
+  },
+  {
+    "id": 11,
+    "caseNum": "45062",
+    "date": "5/6/13",
+    "type": "Stuffed Animal"
   }
 ]
 
@@ -335,10 +441,18 @@ module.exports=[
 module.exports=[
   {
     "levelMessage": "Welcome to The Evidence Room! Due to budget cuts at the precinct, all the evidence has to be stored in one room. It's up to YOU to make sure the evidence gets to the right police officers, even when they don't know exactly which piece of evidence they need...",
-    "evidenceTags": [0, 1],
-    "neededTags": [0],
-    "messages": ["Hey mac, lemme get the evidence from Case #21."],
-    "caseFiles": [0]
+    "evidenceTags": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    "neededTags": [0, 8, 1, 7, 3, 5, 11],
+    "messages": [
+      "Hey mac, lemme get the evidence from Case #21.",
+      "Hey mac, can you get me the evidence from the Milennium Christmas Killer? The Casefile Computer might help you out.",
+      "Hey mac, remember that piece of the victim's suit that fell off during that one opera murder? Find it for me, would ya?",
+      "Hey mac, would you mind getting the chatlogs that we printed out from the '93 stalker case?",
+      "Sorry to bother you again, mac. Can I get the other evidence we have from the opera murder?",
+      "Hey mac, lemme get the evidence from the week before Valentine's Day.",
+      "Hey mac, can you get me the evidence from June 5th? I think one of our British interns filled out the evidence tag.",
+    ],
+    "caseFiles": [0, 1, 2, 3, 4]
   }
 ]
 

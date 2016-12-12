@@ -15,6 +15,7 @@ var gameStarted = false;
 var $arrowLeft;
 var $arrowRight;
 var timerID;
+var officerIntervalID;
 
 function addClickableText(text, func, className) {
   return $('<div>').html('<span class="' + className +'">' + text + '</span>').click(func);
@@ -91,7 +92,7 @@ function displayCover(message) {
             $pageNum.html(currentPage + '/' + Math.ceil(remainingTags.length / 4));
           });
 
-          addCasefiles(true);
+          addCasefiles(false);
           addTagsByPage(true);
           $pageNum.html(currentPage + '/' + Math.ceil(remainingTags.length / 4));
           setTimeout(function() {
@@ -107,13 +108,15 @@ function displayCover(message) {
 }
 
 function displayOfficerMessage(message) {
+  clearInterval(officerIntervalID);
   if ((submittedTagIDs.length == LevelsJSON[currentLevel - 1].neededTags.length) && (message == undefined)) {
     displayCover('YOU WIN!');
   } else {
     animating = true;
     $('#officer-panel').html('');
     $('<div>').attr('class', 'officer-message').appendTo($('#officer-panel'));
-    var intervalID = setInterval(function() {
+
+    officerIntervalID = setInterval(function() {
       $('#talking')[0].play();
       var $officerMessage = $('.officer-message');
       if (message == undefined) {
@@ -129,22 +132,35 @@ function displayOfficerMessage(message) {
             $($('.strike')[2 - strikes]).html('[X]');
             strikes++;
             $('#strikesound')[0].play();
+
+            clearInterval(officerIntervalID);
+            if (strikes > 2) {
+              displayCover('GAME OVER');
+            } else {
+              setTimeout(displayOfficerMessage, 2000);
+            }
           break;
           case 'That\'s not right...':
             $($('.strike')[2 - strikes]).html('[X]');
             strikes++;
             $('#strikesound')[0].play();
+
+            clearInterval(officerIntervalID);
+            setTimeout(displayOfficerMessage, 2000);
           break;
           case 'That\'s not right! You\'ve made too many mistakes, cementhead! You\'re fired!':
             $($('.strike')[2 - strikes]).html('[X]');
             strikes++;
             $('#strikesound')[0].play();
+
+            clearInterval(officerIntervalID);
             displayCover('GAME OVER');
           break;
+          default:
+            clearInterval(officerIntervalID);
         }
         $('#talking')[0].pause();
         animating = false;
-        clearInterval(intervalID);
       }
     }, 35);
   }
@@ -154,19 +170,20 @@ function submitTag() {
   animating = true;
   $('#submit')[0].play();
 
-  for (var i = 0; i < remainingTags.length; i++) {
-    if (remainingTags[i] == this.$div.data('id')) {
-      submittedTagIDs.push($evidenceTags[i % 4].data('id'));
-      remainingTags.splice(i, 1);
-      if ((remainingTags.length % 4 == 0) && (remainingTags.length > 0) && (currentPage - 1 == Math.ceil(remainingTags.length / 4)) && (submittedTagIDs[submittedTagIDs.length - 1] == LevelsJSON[currentLevel - 1].neededTags[submittedTagIDs.length - 1])) {
-        currentPage--;
-      }
-      break;
-    }
-  }
-
   var intervalID = setInterval(function() {
     if (parseInt(this.$div.css('left')) >= 400) {
+
+      for (var i = 0; i < remainingTags.length; i++) {
+        if (remainingTags[i] == this.$div.data('id')) {
+          submittedTagIDs.push($evidenceTags[i % 4].data('id'));
+          remainingTags.splice(i, 1);
+          if ((remainingTags.length % 4 == 0) && (remainingTags.length > 0) && (currentPage - 1 == Math.ceil(remainingTags.length / 4)) && (submittedTagIDs[submittedTagIDs.length - 1] == LevelsJSON[currentLevel - 1].neededTags[submittedTagIDs.length - 1])) {
+            currentPage--;
+          }
+          break;
+        }
+      }
+
       tagAnimationNum = 1;
       animating = false;
       clearInterval(intervalID);
@@ -199,20 +216,22 @@ function submitTag() {
 function addCasefiles(animate) {
   var $caseFileMonitor = $('#casefile-monitor');
   $caseFileMonitor.html('');
-  $('<div>').attr('id', 'casefile-topbar').html($('<div>').attr('class', 'bar').html(addClickableText('Casefiles', undefined, 'top-text'))).appendTo($caseFileMonitor);
+  $('<div>').attr('id', 'casefile-topbar').html($('<div>').attr('class', 'bar').html(addClickableText('Casefile Computer', undefined, 'top-text'))).appendTo($caseFileMonitor);
 
-  if (true) { //change to animate != undefined if deemed annoying
-    for (var i = 0; i < LevelsJSON[currentLevel - 1].caseFiles.length; i++) {
-      setTimeout(function() {
-        $('<div>').attr('class', 'casefile-text').html(addClickableText(CaseFilesJSON[[LevelsJSON[currentLevel - 1].caseFiles[this.num]]].title, displayCasefileData, 'text').data('id', LevelsJSON[currentLevel - 1].caseFiles[this.num])).appendTo($caseFileMonitor)
-        $('#blip' + (Math.floor(Math.random() * 3) + 1))[0].play();
-      }.bind({num: i}), (i + 1) * 250);
-    }
-  } else {
+  // if ((animate != undefined) && (animate)) {
+  //   for (var i = 0; i < LevelsJSON[currentLevel - 1].caseFiles.length; i++) {
+  //     setTimeout(function() {
+  //       if (!animating) {
+  //         $('<div>').attr('class', 'casefile-text').html(addClickableText(CaseFilesJSON[[LevelsJSON[currentLevel - 1].caseFiles[this.num]]].title, displayCasefileData, 'text').data('id', LevelsJSON[currentLevel - 1].caseFiles[this.num])).appendTo($caseFileMonitor)
+  //         $('#blip' + (Math.floor(Math.random() * 3) + 1))[0].play();
+  //       }
+  //     }.bind({num: i}), (i + 1) * 250);
+  //   }
+  // } else {
     for (var i = 0; i < LevelsJSON[currentLevel - 1].caseFiles.length; i++) {
       $('<div>').attr('class', 'casefile-text').html(addClickableText(CaseFilesJSON[[LevelsJSON[currentLevel - 1].caseFiles[i]]].title, displayCasefileData, 'text').data('id', LevelsJSON[currentLevel - 1].caseFiles[i])).appendTo($caseFileMonitor);
     }
-  }
+  // }
 
   $('<div>').attr('id', 'casefile-bottombar').html($('<div>').attr('class', 'bar').html(addClickableText('CasefileOS-v0.37', function() {
     $caseFileMonitor.html('');
@@ -229,11 +248,16 @@ function displayCasefileData() {
 
   switch (casefile.type) {
     case 'newspaper':
-      $('<div>').attr('id', 'casefile-topbar').html($('<div>').attr('class', 'bar').html('<span class="top-text">' + casefile.title + '</span>' + '<span class="top-text casefile-date">' + casefile.date + '</span>')).appendTo($caseFileMonitor);
+      $('<div>').attr('id', 'casefile-topbar').html($('<div>').attr('class', 'bar').html('<span class="top-text">' + casefile.title + '</span>' + '<span class="top-text casefile-date">' + casefile.data + '</span>')).appendTo($caseFileMonitor);
       $('<div>').attr('class', 'newspaper').html('<div id="newspaper-icon"></div>' + '<div class="file-text">' + casefile.text + '</div>').appendTo($caseFileMonitor);
     break;
+    case 'notes':
+    $('<div>').attr('id', 'casefile-topbar').html($('<div>').attr('class', 'bar').html('<span class="top-text">' + casefile.title + '</span>' + '<span class="top-text casefile-date">' + casefile.data + '</span>')).appendTo($caseFileMonitor);
+      $('<div>').attr('class', 'file-text').html(casefile.text).appendTo($caseFileMonitor);
+    break;
     default:
-      $caseFileMonitor.html($('<div>').attr('class', 'file-text').html(casefile.text));
+      $('<div>').attr('id', 'casefile-topbar').html($('<div>').attr('class', 'bar').html('<span class="top-text">' + casefile.title + '</span>')).appendTo($caseFileMonitor);
+      $('<div>').attr('class', 'file-text').html(casefile.text).appendTo($caseFileMonitor);
   }
 
   $('<div>').attr('id', 'casefile-bottombar').html($('<div>').attr('class', 'bar').html(addClickableText('Back', addCasefiles, 'topbar-text'))).appendTo($caseFileMonitor);
@@ -258,7 +282,6 @@ function decreaseTimer() {
   if (timer == 0) {
     displayOfficerMessage('You\'re taking too long, mac! I\'m outta here!');
     timer = 60;
-    setTimeout(displayOfficerMessage, 2500);
   } else {
     timer--;
     if (timer > 9) {
@@ -286,7 +309,7 @@ function addTagsByPage(initLevel) {
 
   for (var i = (currentPage - 1) * 4; i < tags.length; i++) {
     addTag(tags[i]);
-    if (i == 3) {
+    if (i == 3 + (currentPage - 1) * 4) {
       if (tags[4] != undefined) {
         $arrowRight.appendTo($('body'));
       }
